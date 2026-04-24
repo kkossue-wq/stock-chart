@@ -952,9 +952,10 @@ KIS_ACCOUNT_NO=계좌번호8자리
             b1, b2 = st.columns([1, 3])
             with b1:
                 if st.button("📈 차트 분석", key=f"chart_{h['code']}"):
-                    st.session_state["chart_ticker"] = h["ticker"]
-                    st.session_state["chart_name"] = h["name"]
-                    st.info(f"차트 분석 페이지에서 **{h['name']}** 를 직접 입력하세요: `{h['ticker']}`")
+                                                         st.session_state["chart_ticker"] = h["ticker"]
+                    st.session_state["nav_to"] = "📈 차트 분석"
+                    st.rerun()
+
             with b2:
                 st.caption(f"종목코드: {h['code']} | 티커: {h['ticker']}")
 
