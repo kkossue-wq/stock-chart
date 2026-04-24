@@ -109,10 +109,17 @@ def page_chart_analysis():
 
     with st.sidebar:
         st.header("🔍 종목 선택")
-        ticker = stock_picker("chart")
 
-        if ticker:
-            st.caption(f"티커: `{ticker}`")
+        # 포트폴리오에서 넘어온 경우 자동 로드
+        if "chart_ticker" in st.session_state:
+            ticker = st.session_state.pop("chart_ticker")
+            st.info(f"티커: `{ticker}`")
+            if st.button("🔄 다른 종목 선택", use_container_width=True):
+                st.rerun()
+        else:
+            ticker = stock_picker("chart")
+            if ticker:
+                st.caption(f"티커: `{ticker}`")
 
         st.divider()
         period = st.select_slider(
@@ -811,11 +818,10 @@ def _trade_list():
                     st.caption(f"종합 신호: {ctx.get('overall', 'N/A')}")
 
             b1, b2, _ = st.columns([1, 1, 3])
+            trade_key = trade.get("id", f"{trade.get('date', '')}_{trade.get('ticker', '')}")
             with b1:
-                trade_key = trade.get("id", f"{trade.get('date', '')}_{trade.get('ticker', '')}")
-            if st.button("🤖 이 매매 AI 분석", key=f"ai_{trade_key}"):
+                if st.button("🤖 이 매매 AI 분석", key=f"ai_{trade_key}"):
                     with st.spinner("분석 중..."):
-                        # 차트 데이터 가져와서 분석
                         import yfinance as yf
                         start = (pd.to_datetime(trade["date"]) - timedelta(days=200)).strftime("%Y-%m-%d")
                         end = (pd.to_datetime(trade["date"]) + timedelta(days=1)).strftime("%Y-%m-%d")
@@ -952,10 +958,9 @@ KIS_ACCOUNT_NO=계좌번호8자리
             b1, b2 = st.columns([1, 3])
             with b1:
                 if st.button("📈 차트 분석", key=f"chart_{h['code']}"):
-                                                         st.session_state["chart_ticker"] = h["ticker"]
+                    st.session_state["chart_ticker"] = h["ticker"]
                     st.session_state["nav_to"] = "📈 차트 분석"
                     st.rerun()
-
             with b2:
                 st.caption(f"종목코드: {h['code']} | 티커: {h['ticker']}")
 
