@@ -988,6 +988,51 @@ KIS_ACCOUNT_NO=계좌번호8자리
 
         st.divider()
 
+    # ── 비율 파이차트 ──
+    st.subheader("🥧 보유 비율")
+    c_pie, c_bar = st.columns(2)
+    with c_pie:
+        fig_pie = go.Figure(go.Pie(
+            labels=[h["name"] for h in holdings],
+            values=[h["eval_amount"] for h in holdings],
+            hole=0.4,
+            textinfo="label+percent",
+            hovertemplate="%{label}<br>₩%{value:,.0f}<br>%{percent}<extra></extra>",
+        ))
+        fig_pie.update_layout(
+            height=350,
+            paper_bgcolor="#131722",
+            font=dict(color="#d1d4dc"),
+            showlegend=False,
+            margin=dict(l=10, r=10, t=30, b=10),
+        )
+        st.plotly_chart(fig_pie, use_container_width=True)
+    with c_bar:
+        holdings_sorted_bar = sorted(holdings, key=lambda x: x["eval_amount"], reverse=True)
+        fig_bar = go.Figure(go.Bar(
+            x=[h["eval_amount"] for h in holdings_sorted_bar],
+            y=[h["name"] for h in holdings_sorted_bar],
+            orientation="h",
+            marker_color=[
+                "#ef5350" if h["profit_loss"] >= 0 else "#1565c0"
+                for h in holdings_sorted_bar
+            ],
+            text=[f"₩{h['eval_amount']:,.0f}" for h in holdings_sorted_bar],
+            textposition="auto",
+        ))
+        fig_bar.update_layout(
+            height=350,
+            paper_bgcolor="#131722",
+            plot_bgcolor="#131722",
+            font=dict(color="#d1d4dc"),
+            margin=dict(l=10, r=10, t=30, b=10),
+            xaxis=dict(gridcolor="#1e2130"),
+            yaxis=dict(gridcolor="#1e2130"),
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
+
+    st.divider()
+
     # ── 보유 종목 ──
     st.subheader(f"📋 보유 종목 ({len(holdings)}개)")
 
