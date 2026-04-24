@@ -41,9 +41,15 @@ PAGES = {
 def main():
     with st.sidebar:
         st.markdown("## 📊 주식차트보는놈")
+
+        # 포트폴리오 → 차트분석 자동 이동
+        if st.session_state.get("nav_to"):
+            st.session_state["_nav_radio"] = st.session_state.pop("nav_to")
+
         page_name = st.radio(
             "페이지",
             list(PAGES.keys()),
+            key="_nav_radio",
             label_visibility="collapsed",
         )
         st.divider()
