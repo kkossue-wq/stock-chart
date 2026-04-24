@@ -1067,6 +1067,29 @@ KIS_ACCOUNT_NO=계좌번호8자리
 
     st.divider()
 
+    # ── 추천 비율 참고 ──
+    st.subheader("📌 추천 보유 비율 참고")
+    rc1, rc2 = st.columns(2)
+    with rc1:
+        st.markdown("**🛡️ 보수적**")
+        st.markdown("""
+- S&P500 ETF **40%**
+- 배당 ETF **30%**
+- 채권 **20%**
+- 금 **10%**
+        """)
+    with rc2:
+        st.markdown("**⚖️ 중립 (적당히 공격적)**")
+        st.markdown("""
+- 나스닥/기술 ETF **35%**
+- 방산/AI 테마 **25%**
+- S&P500 ETF **25%**
+- 금 **15%**
+        """)
+    st.caption("⚠️ 참고용입니다. 본인 상황에 맞게 조정하세요.")
+
+    st.divider()
+
     # ── 보유 종목 ──
     st.subheader(f"📋 보유 종목 ({len(holdings)}개)")
 
