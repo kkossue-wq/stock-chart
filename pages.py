@@ -222,8 +222,8 @@ def page_chart_analysis():
             col.info(f"**{name}**\n\n{signal_icon(sig)} {sig}")
 
     # 탭
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        ["💡 매매 가이드", "📰 뉴스", "💰 배당/재무", "🎯 지지/저항", "🤖 AI 분석"]
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+        ["💡 매매 가이드", "📰 뉴스", "💰 배당/재무", "🎯 지지/저항", "⭐ 추천 ETF", "🤖 AI 분석"]
     )
 
     with tab1:
@@ -235,6 +235,8 @@ def page_chart_analysis():
     with tab4:
         _render_support_resistance(support, resistance, latest["Close"], ticker)
     with tab5:
+        _render_recommended_etfs()
+    with tab6:
         if run_ai:
             with st.spinner("Claude AI가 분석 중입니다... (10~20초)"):
                 analysis = ai_analyze_chart(
@@ -252,6 +254,46 @@ def page_chart_analysis():
 - ✅ 매수/매도 타이밍 제안
 - ✅ 보수적 투자자 관점 조언
             """)
+
+
+def _render_recommended_etfs():
+    st.markdown("#### ⭐ 보수적 투자자를 위한 추천 ETF")
+    st.caption("장기 적립식 투자에 적합한 ETF 목록입니다. 종목명 클릭 시 차트 분석으로 이동해요.")
+
+    RECOMMENDED = [
+        # (카테고리, 이름, 티커, 한줄 설명)
+        ("🇰🇷 미국지수 (국내 ETF)", "TIGER 미국S&P500", "360750.KS", "S&P500 추종. 원화로 미국 대형주 500개에 분산투자. 장기 적립식 핵심"),
+        ("🇰🇷 미국지수 (국내 ETF)", "TIGER 미국나스닥100", "364980.KS", "나스닥100 추종. 기술주 비중 높음. S&P500보다 변동성 큼"),
+        ("🇰🇷 배당 (국내 ETF)", "TIGER 미국배당다우존스", "458730.KS", "미국 배당성장주 추종. 매월 배당 지급. 안정적 현금흐름 원하는 분께"),
+        ("🇰🇷 배당 (국내 ETF)", "ACE 미국배당다우존스", "448540.KS", "TIGER와 유사, 매월 배당. 운용보수 비교 후 선택"),
+        ("🇰🇷 금 (국내 ETF)", "TIGER KRX금현물", "411060.KS", "금 현물 추종. 인플레이션 헤지용. 포트폴리오 5~10% 권장"),
+        ("🇰🇷 방산 (국내 ETF)", "PLUS K방산", "471540.KS", "한국 방산주 묶음. 글로벌 방산 수요 증가 수혜"),
+        ("🇺🇸 미국 ETF", "VOO (S&P500)", "VOO", "뱅가드 S&P500. 운용보수 최저 수준. 미국 직접투자 핵심"),
+        ("🇺🇸 미국 ETF", "QQQ (나스닥100)", "QQQ", "나스닥100 대표 ETF. 기술주 집중"),
+        ("🇺🇸 배당 ETF", "SCHD (배당성장)", "SCHD", "미국 고품질 배당성장주. 장기 보유 시 배당+주가 모두 성장"),
+        ("🇺🇸 배당 ETF", "JEPI (커버드콜)", "JEPI", "매월 높은 배당. 상승 수익 일부 제한되지만 안정적 수입"),
+        ("🇺🇸 금/채권", "GLD (금)", "GLD", "금 ETF. 달러 약세·인플레 헤지용"),
+        ("🇺🇸 금/채권", "TLT (장기국채)", "TLT", "미국 20년 국채. 금리 하락 시 수익. 주식과 역상관 관계"),
+    ]
+
+    categories = {}
+    for cat, name, ticker_r, desc in RECOMMENDED:
+        categories.setdefault(cat, []).append((name, ticker_r, desc))
+
+    for cat, items in categories.items():
+        st.markdown(f"**{cat}**")
+        for name, ticker_r, desc in items:
+            c1, c2 = st.columns([2, 1])
+            with c1:
+                st.markdown(f"- **{name}** `{ticker_r}`  \n  {desc}")
+            with c2:
+                if st.button(f"📈 차트보기", key=f"rec_{ticker_r}"):
+                    st.session_state["chart_ticker"] = ticker_r
+                    st.session_state["nav_to"] = "📈 차트 분석"
+                    st.rerun()
+        st.divider()
+
+    st.info("💡 **추천 포트폴리오 예시 (보수적)**\n\nS&P500 ETF 40% + 배당 ETF 30% + 금 10% + 방산/테마 20%")
 
 
 def _render_trade_guide(signals: dict):
