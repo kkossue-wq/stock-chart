@@ -315,7 +315,41 @@ def _render_recommended_etfs():
         st.divider()
 
     st.info(portfolio_tip)
-    st.warning("⚠️ 추천 ETF는 참고용입니다. 본인의 투자 목표와 상황에 맞게 판단하세요.")
+
+    # 추천 보유 비율 파이차트
+    st.markdown("---")
+    st.markdown("#### 🥧 추천 보유 비율")
+    if style == "🛡️ 보수적":
+        labels = ["S&P500 ETF", "배당 ETF", "채권", "금"]
+        values = [40, 30, 20, 10]
+        colors = ["#29b6f6", "#4caf50", "#ff9800", "#ffd700"]
+        desc_text = "안정성 최우선. 주식 70% + 안전자산 30% 구성."
+    else:
+        labels = ["나스닥 ETF", "방산/AI 테마", "S&P500 ETF", "금"]
+        values = [35, 25, 25, 15]
+        colors = ["#29b6f6", "#ef5350", "#4caf50", "#ffd700"]
+        desc_text = "성장성 강화. 기술/테마 60% + 분산 40% 구성."
+
+    fig = go.Figure(go.Pie(
+        labels=labels,
+        values=values,
+        hole=0.45,
+        marker=dict(colors=colors),
+        textinfo="label+percent",
+        hovertemplate="%{label}: %{value}%<extra></extra>",
+    ))
+    fig.update_layout(
+        height=320,
+        paper_bgcolor="#131722",
+        font=dict(color="#d1d4dc", size=13),
+        showlegend=True,
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
+        margin=dict(l=10, r=10, t=20, b=40),
+        annotations=[dict(text=f"{sum(values)}%", x=0.5, y=0.5, font_size=18, showarrow=False, font_color="#d1d4dc")],
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption(f"💡 {desc_text}")
+    st.warning("⚠️ 추천 ETF와 비율은 참고용입니다. 본인의 투자 목표와 상황에 맞게 판단하세요.")
 
 
 def _render_trade_guide(signals: dict):
